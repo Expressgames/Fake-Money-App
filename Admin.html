@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+  <script type="module">
+    // Import Firebase SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
+    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDjbl8bbf4aGu1P3Jk9AQd_vOCvfpgLUv4",
+      authDomain: "fake-money-transaction.firebaseapp.com",
+      databaseURL: "https://fake-money-transaction-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "fake-money-transaction",
+      storageBucket: "fake-money-transaction.firebasestorage.app",
+      messagingSenderId: "654165502718",
+      appId: "1:654165502718:web:0f7dede885a7fa39e153af"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Function to add credits
+    function addCredits(player, amount) {
+      const playerRef = ref(db, player);
+      get(playerRef).then(snapshot => {
+        const currentBalance = snapshot.val() || 0;
+        set(playerRef, currentBalance + parseInt(amount));
+        alert(`Added ${amount} credits to ${player}`);
+      });
+    }
+  </script>
+</head>
+<body>
+  <h1>Admin Panel</h1>
+  <button onclick="addCredits('player1', prompt('Enter amount for Player 1'))">Add Credits to Player 1</button>
+  <button onclick="addCredits('player2', prompt('Enter amount for Player 2'))">Add Credits to Player 2</button>
+</body>
+</html>
