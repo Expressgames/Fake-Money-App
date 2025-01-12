@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Player 1</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
+    import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDjbl8bbf4aGu1P3Jk9AQd_vOCvfpgLUv4",
+      authDomain: "fake-money-transaction.firebaseapp.com",
+      databaseURL: "https://fake-money-transaction-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "fake-money-transaction",
+      storageBucket: "fake-money-transaction.firebasestorage.app",
+      messagingSenderId: "654165502718",
+      appId: "1:654165502718:web:0f7dede885a7fa39e153af"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    function updateBalance() {
+      const playerRef = ref(db, 'player1');
+      onValue(playerRef, snapshot => {
+        document.getElementById('balance').innerText = snapshot.val() || 0;
+      });
+    }
+
+    function sendCredits() {
+      const amount = parseInt(prompt('Enter amount to send to Player 2'));
+      const player1Ref = ref(db, 'player1');
+      const player2Ref = ref(db, 'player2');
+
+      get(player1Ref).then(snapshot => {
+        const currentBalance = snapshot.val() || 0;
+        if (amount > currentBalance) {
+          alert('Not enough credits!');
+        } else {
+          set(player1Ref, currentBalance - amount);
+          get(player2Ref).then(snapshot2 => {
+            const player2Balance = snapshot2.val() || 0;
+            set(player2Ref, player2Balance + amount);
+            alert(`Sent ${amount} credits to Player 2`);
+          });
+        }
+      });
+    }
+  </script>
+</head>
+<body onload="updateBalance()">
+  <h1>Player 1</h1>
+  <p>Balance: <span id="balance">0</span></p>
+  <button onclick="sendCredits()">Send Credits to Player 2</button>
+</body>
+</html>
