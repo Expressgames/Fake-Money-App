@@ -1,16 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Panel</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin: 20px;
+      padding: 20px;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #f9f9f9;
     }
     input, button {
+      width: 100%;
       padding: 10px;
-      margin: 10px;
+      margin: 10px 0;
       font-size: 16px;
     }
   </style>
@@ -41,20 +52,22 @@
       const playerRef = ref(db, player);
       get(playerRef).then(snapshot => {
         const currentBalance = snapshot.val() || 0;
-        set(playerRef, currentBalance + amount);
-        alert(`Added ${amount} credits to ${player}`);
+        set(playerRef, currentBalance + amount).then(() => {
+          alert(`Added ${amount} credits to ${player}`);
+          document.getElementById(`${player}-amount`).value = '';
+        });
       });
     }
   </script>
 </head>
 <body>
   <h1>Admin Panel</h1>
-  <div>
+  <div class="container">
     <h3>Add Credits to Player 1</h3>
     <input type="number" id="player1-amount" placeholder="Enter amount">
     <button onclick="addCredits('player1')">Add to Player 1</button>
   </div>
-  <div>
+  <div class="container">
     <h3>Add Credits to Player 2</h3>
     <input type="number" id="player2-amount" placeholder="Enter amount">
     <button onclick="addCredits('player2')">Add to Player 2</button>
