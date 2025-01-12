@@ -1,16 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Player 2</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin: 20px;
+      padding: 20px;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #f9f9f9;
     }
     input, button {
+      width: 100%;
       padding: 10px;
-      margin: 10px;
+      margin: 10px 0;
       font-size: 16px;
     }
   </style>
@@ -56,8 +67,10 @@
           set(player2Ref, currentBalance - amount);
           get(player1Ref).then(snapshot2 => {
             const player1Balance = snapshot2.val() || 0;
-            set(player1Ref, player1Balance + amount);
-            alert(`Sent ${amount} credits to Player 1`);
+            set(player1Ref, player1Balance + amount).then(() => {
+              alert(`Sent ${amount} credits to Player 1`);
+              document.getElementById('amount').value = '';
+            });
           });
         }
       });
@@ -66,8 +79,10 @@
 </head>
 <body onload="updateBalance()">
   <h1>Player 2</h1>
-  <p>Balance: <span id="balance">0</span></p>
-  <input type="number" id="amount" placeholder="Enter amount to send">
-  <button onclick="sendCredits()">Send Credits to Player 1</button>
+  <div class="container">
+    <p>Balance: <span id="balance">0</span></p>
+    <input type="number" id="amount" placeholder="Enter amount to send">
+    <button onclick="sendCredits()">Send Credits to Player 1</button>
+  </div>
 </body>
 </html>
