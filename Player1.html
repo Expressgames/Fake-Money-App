@@ -2,6 +2,18 @@
 <html>
 <head>
   <title>Player 1</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+  </style>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
     import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
@@ -27,7 +39,12 @@
     }
 
     function sendCredits() {
-      const amount = parseInt(prompt('Enter amount to send to Player 2'));
+      const amount = parseInt(document.getElementById('amount').value);
+      if (isNaN(amount) || amount <= 0) {
+        alert('Please enter a valid amount.');
+        return;
+      }
+
       const player1Ref = ref(db, 'player1');
       const player2Ref = ref(db, 'player2');
 
@@ -50,6 +67,7 @@
 <body onload="updateBalance()">
   <h1>Player 1</h1>
   <p>Balance: <span id="balance">0</span></p>
+  <input type="number" id="amount" placeholder="Enter amount to send">
   <button onclick="sendCredits()">Send Credits to Player 2</button>
 </body>
 </html>
